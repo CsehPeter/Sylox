@@ -1,0 +1,20 @@
+
+- Gitlens
+
+Languages
+    - Verilog-HDL/SystemVerilog/Bluespec SystemVerilog
+    - Python
+    - C / C++
+
+Code Formatting
+    - TODO Highlight
+    - indent-rainbow
+    - trailing whitespaces
+
+Theme
+    - Color   : Dark+
+    - Icon    : Material Icon Theme
+
+File Formats
+    - PDF     : vs_code_pdf
+    - draw.io
