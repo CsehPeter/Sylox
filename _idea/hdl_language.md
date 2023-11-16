@@ -290,6 +290,8 @@ Code-time information:
 ## Example
 ####################################################################################################
 
+```
+
 class Adder:
     def __init__(data_width: u32):
         declare()
@@ -368,3 +370,4 @@ class ClassName:
         set_ports(mode)
 
     def __logic__():
+```

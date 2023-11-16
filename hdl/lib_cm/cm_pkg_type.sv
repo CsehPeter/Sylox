@@ -2,18 +2,20 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
-// Library      : Data Stream
-// Description  :
+// Library      : lib_cm
+// Description  : Common package that defines basic data tpyes
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module fifo #(
-    parameter int WIDTH = 8,
-    parameter int DEPTH = 8
-)(
-    input logic i_clk,
-    input logic i_rst,
+`ifndef __CM_PKG_TYPE
+`define __CM_PKG_TYPE
 
+package cm_pkg_type;
 
-);
+    typedef byte unsigned       u8;
+    typedef shortint unsigned   u16;
+    typedef int unsigned        u32;
+    typedef longint unsigned    u64;
 
-endmodule
+endpackage
+
+`endif

@@ -109,3 +109,9 @@ graph TD
 Biology --> Chemistry
 ```
 
+
+
+# Internal Link
+[[markdown#Table]]
+
+[[#Table]]
