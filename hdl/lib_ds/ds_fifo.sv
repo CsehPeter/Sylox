@@ -9,8 +9,8 @@
 `ifndef __DS_FIFO
 `define __DS_FIFO
 
-import cm_pkg_type::*;
-import cm_pkg_fn::*;
+import sys_pkg_type::*;
+import sys_pkg_fn::*;
 
 import ds_pkg::*;
 
@@ -58,8 +58,8 @@ module ds_fifo #(
 
                 FIFO_ARCH_RAM: begin
                     // Pointers
-                    logic [$clog2(CAPACITY) - 1 : 0] q_wr_ptr;
-                    logic [$clog2(CAPACITY) - 1 : 0] q_rd_ptr;
+                    logic [sclog2(CAPACITY) - 1 : 0] q_wr_ptr;
+                    logic [sclog2(CAPACITY) - 1 : 0] q_rd_ptr;
 
                     always_ff @ (posedge i_clk) begin : p_ptrs
                         if(i_rst) begin

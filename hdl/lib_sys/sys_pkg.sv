@@ -2,14 +2,31 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
-// Library      : lib_cm
-// Description  : Common package that implements basic functions
+// Library      : lib_sys
+// Description  :
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-`ifndef __CM_PKG_SYS
-`define __CM_PKG_SYS
+`ifndef __SYS_PKG
+`define __SYS_PKG
 
-package cm_pkg_sys;
+package sys_pkg;
+
+    /* TODO:
+        - A macro might be a good idea to switch easily between synchronous and asynchronous reset. This macro could be included in every always_ff block
+        - Constant for global reset polarity
+    */
+
+
+
+    // Reset for sensitivity list in always_ff
+    `define RST_SENS(rst) (or negedge rst)      // Async negedge
+    // `define RST_SENS(rst) (or posedge rst)      // Async posedge
+    // `define RST_SENS(rst) ()                    // Sync
+
+
+
+
+
 
     // Reset
     typedef enum {RST_SYNC, RST_ASYNC} t_rst_sync;      // Reset synchronicity
@@ -18,11 +35,6 @@ package cm_pkg_sys;
         t_rst_sync  sync;
         logic       active;
     } t_rst;
-
-
-    // Clock
-    typedef enum {CLK_POS, CLK_NEG} t_clk_pol;
-
 
     // System
     typedef struct {

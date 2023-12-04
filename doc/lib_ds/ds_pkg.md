@@ -4,10 +4,9 @@
 
 | Value  | Name           | Description                                                                      |
 | ------ | -------------- | -------------------------------------------------------------------------------- |
-| FC_BI  | Bidirectional  | Each block has to accept the transaction (handshake)                             |
+| FC_BI  | Bidirectional  | Both blocks has to accept the transaction (handshake)                            |
 | FC_UNI | Unidirectional | Only the transmitter has to initiate the transaction, the receiver can't decline |
 | FC_NO  | Uncontrolled   | There is no flow control, all data in every clock cycle is valid                 |
-
 ## FIFO Architecture
 *t_fifo_arch* is used to describe the internal structure of a FIFO.
 

@@ -2,14 +2,14 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
-// Library      : lib_cm
-// Description  : Common package that defines basic data tpyes
+// Library      : lib_sys
+// Description  : System package that defines basic data types
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-`ifndef __CM_PKG_TYPE
-`define __CM_PKG_TYPE
+`ifndef __SYS_PKG_TYPE
+`define __SYS_PKG_TYPE
 
-package cm_pkg_type;
+package sys_pkg_type;
 
     typedef byte unsigned       u8;
     typedef shortint unsigned   u16;

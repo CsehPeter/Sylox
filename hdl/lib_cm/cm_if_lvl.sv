@@ -9,8 +9,8 @@
 `ifndef __CM_IF_LVL
 `define __CM_IF_LVL
 
-import cm_pkg_type::*;
-import cm_pkg_fn::*;
+import sys_pkg_type::*;
+import sys_pkg_fn::*;
 
 interface cm_if_lvl #(
     parameter u32 CAPACITY = 0

@@ -1,14 +1,7 @@
-- [[#Brief|Brief]]
-- [[#Parameters|Parameters]]
-- [[#Ports|Ports]]
-- [[#Modes|Modes]]
-	- [[#Modes#Bypass Mode|Bypass Mode]]
-	- [[#Modes#Half-Speed Mode|Half-Speed Mode]]
-	- [[#Modes#Shift Register Mode|Shift Register Mode]]
-	- [[#Modes#RAM Mode|RAM Mode]]
-- [[#Requirements|Requirements]]
 # Brief
-Provides a buffer for data streams in first-in first-out order, with FWFT behavior.
+Provides a buffer for data streams in first-in-first-out order, with first-word-fall-through behavior.
+
+![alt text](draw/ds_fifo_top.drawio.svg)
 # Parameters
 | Name     | Type        | Default       | Range | Description                                    | Comment        |
 | -------- | ----------- | ------------- | ----- | ---------------------------------------------- | -------------- |
@@ -27,6 +20,8 @@ Provides a buffer for data streams in first-in first-out order, with FWFT behavi
 # Modes
 ## Bypass Mode
 **Requirement**: *CAPACITY* = 0
+
+![alt text](draw/ds_fifo_bypass.drawio.svg)
 
 **Attributes**:
 - The FIFO is not capable to store any data, all of it's data and handshake signals are bypassed. This means that the corresponding write and read signals are connected directly.
@@ -55,8 +50,10 @@ This is the default FIFO mode for medium sized and larger FIFOs.
 | Reset      | RST      | Shall    | On active reset, the FIFO shall be in empty state                                                                                                                                      |                                |
 | Interface  | IF_WR    | Shall    | When write transaction conditions are met, the FIFO shall store the data of the write interface                                                                                        |                                |
 | Interface  | IF_RD    | Shall    | When read transaction conditions are met, the FIFO shall provide new data on it's read interface (if it isn't empty)                                                                   |                                |
-| Operation  | OP_STORE | Shall    | Shall be able to store *CAPACITY* amount of entries                                                                                                                                    |                                |
-| Operation  | OP_ORD   | Shall    | Data on the read interface shall be accessible in the same order as it was received in the write interface                                                                             |                                |
+| Operation  | OP_STORE | Shall    | Shall be able to store *CAPACITY* amount of data words                                                                                                                                 |                                |
+| Operation  | OP_ORD   | Shall    | Data on the read interface shall be accessible in the same order as it was received on the write interface                                                                             |                                |
 | Latency    | LAT_IN   | Shall    | Shall have 1 clock cycle input latency. That means, a new data shall be stored by the FIFO in the next clock cycle                                                                     | Except in [[#Bypass Mode]]     |
 | Latency    | LAT_OUT  | Shall    | Shall have 0 clock cycle output latency. That means, the last data that is stored in the FIFO shall be accessible on the read interface. This is called First-Word-Fall-Through (FWFT) |                                |
 | Throughput | THP      | Shall    | Shall have 100% throughput. If the write and read transaction conditions both met, the FIFO shall not cause backpressure in either interfaces                                          | Except in [[#Half-Speed Mode]] |
+# Architecture                                                                 
+TODO

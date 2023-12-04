@@ -112,6 +112,9 @@ Biology --> Chemistry
 
 
 # Internal Link
-[[markdown#Table]]
+[[markdown_help#Table]]
 
 [[#Table]]
+
+[Different Name For Reference](#Table)
+

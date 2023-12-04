@@ -2,16 +2,16 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
-// Library      : lib_cm
-// Description  : Common package that implements basic functions and macros
+// Library      : lib_sys
+// Description  : System package that implements basic macros and functions
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-`ifndef __CM_PKG_FN
-`define __CM_PKG_FN
+`ifndef __SYS_PKG_FN
+`define __SYS_PKG_FN
 
-import cm_pkg_type::*;
+import sys_pkg_type::*;
 
-package cm_pkg_fn;
+package sys_pkg_fn;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Macros
@@ -30,9 +30,10 @@ package cm_pkg_fn;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Saturated Ceil Log2
-    function u32 sclog2(u32 num);
-        if(num < 1)
-            return 0;
+    // Provides protection agains -1 width bitvector in signal declarations. E.g. "logic [sclog2(W) - 1 : 0] signal"
+    function sys_pkg_type::u32 sclog2(sys_pkg_type::u32 num);
+        if(num <= 1)
+            return 1;
         else
             return $clog2(num);
     endfunction
