@@ -1,7 +1,7 @@
 # Brief
 Provides a buffer for data streams in first-in-first-out order, with first-word-fall-through behavior.
 
-![alt text](draw/ds_fifo_top.drawio.svg)
+![alt text](draw/ds_fifo/bd_brief.drawio.svg)
 # Parameters
 | Name     | Type        | Default       | Range | Description                                    | Comment        |
 | -------- | ----------- | ------------- | ----- | ---------------------------------------------- | -------------- |
@@ -13,37 +13,43 @@ Provides a buffer for data streams in first-in-first-out order, with first-word-
 | --------- | ------------- | --------- | --------------------------- |
 | i_clk     | logic         | in        | Clock source                |
 | i_rst     | logic         | in        | Reset                       |
-| if_wr     | [[ds_if]]     | slv       | Write data-stream interface |
+| if_wr     | [ds_if](ds_if)     | slv       | Write data-stream interface |
 | if_wr_lvl | [[cm_if_lvl]] | mst       | Write level interface       |
 | if_rd     | [[ds_if]]     | mst       | Read data-stream interface  |
 | if_rd_lvl | [[cm_if_lvl]] | mst       | Read level interface        |
 # Modes
 ## Bypass Mode
-**Requirement**: *CAPACITY* = 0
+**Condition**: *CAPACITY* = 0
 
-![alt text](draw/ds_fifo_bypass.drawio.svg)
+![alt text](draw/ds_fifo/bd_bypass.drawio.svg)
 
 **Attributes**:
 - The FIFO is not capable to store any data, all of it's data and handshake signals are bypassed. This means that the corresponding write and read signals are connected directly.
 - Level interfaces assigned to constant values, these shouldn't be used by external modules
 
-**Usage**: In many cases it is a good idea to include a FIFO in a design. With this mode, the instantiated FIFO can be disabled with little code modification.
+**Usage**: In many cases it is a good idea to include a FIFO in a design. However, if it turn out that the FIFO is not required, with this mode, the instantiated FIFO can be disabled with minimal code modification.
 ## Half-Speed Mode
-**Requirement**: *CAPACITY* = 1
+**Condition**: *CAPACITY* = 1
 
 **Attributes**:
 - The FIFO can store exactly one data. This results in alternating handshake signals, thus halving the throughput of the buffer
 ## Shift Register Mode
-**Requirement**: *ARCH* = FIFO_ARCH_SHR
+**Condition**: *ARCH* = FIFO_ARCH_SHR
+
+![alt text](draw/ds_fifo/bd_half_speed.drawio.svg)
 
 **Attributes**:
 - This should result in smaller resource usage, compared to the RAM mode, if the *CAPACITY* is small
 
 **Usage**: Used for small buffers, e.g. a handshake buffer
-## RAM Mode
-**Requirement**: *ARCH* = FIFO_ARCH_RAM
 
-This is the default FIFO mode for medium sized and larger FIFOs.
+**Note**: Input demultiplexer's output count is proportional to the *CAPACITY*.
+## RAM Mode
+**Condition**: *ARCH* = FIFO_ARCH_RAM
+
+![alt text](draw/ds_fifo/bd_ram.drawio.svg)
+
+This is the default FIFO mode for medium and large FIFOs.
 # Requirements
 | Category   | ID       | Severity | Statement                                                                                                                                                                              | Comment                        |
 | ---------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
@@ -55,5 +61,7 @@ This is the default FIFO mode for medium sized and larger FIFOs.
 | Latency    | LAT_IN   | Shall    | Shall have 1 clock cycle input latency. That means, a new data shall be stored by the FIFO in the next clock cycle                                                                     | Except in [[#Bypass Mode]]     |
 | Latency    | LAT_OUT  | Shall    | Shall have 0 clock cycle output latency. That means, the last data that is stored in the FIFO shall be accessible on the read interface. This is called First-Word-Fall-Through (FWFT) |                                |
 | Throughput | THP      | Shall    | Shall have 100% throughput. If the write and read transaction conditions both met, the FIFO shall not cause backpressure in either interfaces                                          | Except in [[#Half-Speed Mode]] |
+## Operation Waveform
+![alt text](draw/ds_fifo/wf_op.drawio.svg)
 # Architecture                                                                 
 TODO

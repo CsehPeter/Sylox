@@ -6,13 +6,13 @@
 // Description  :
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-`ifndef __CM_ARB
-`define __CM_ARB
+`ifndef __CM_ARBITER
+`define __CM_ARBITER
 
 import sys_pkg_type::*;
 import cm_pkg::*;
 
-module cm_arb #(
+module cm_arbiter #(
     parameter u32           CH_CNT      = 2,
     parameter u32           WEIGHT_BITS = 8,
     parameter t_arb_algo    ALGO        = ARB_MIN
