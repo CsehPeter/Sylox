@@ -1,7 +1,7 @@
 # Brief
 Provides a pipelined, parallel sorting logic.
 
-![alt text](draw/cm_sort_top.drawio.svg)
+![alt text](draw/cm_sort/bd_top.drawio.svg)
 # Parameters
 | Name    | Type | Default | Range | Description                                               | Comment                                   |
 | ------- | ---- | ------- | ----- | --------------------------------------------------------- | ----------------------------------------- |

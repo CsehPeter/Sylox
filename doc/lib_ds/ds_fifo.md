@@ -1,5 +1,5 @@
 # Brief
-Provides a buffer for data streams in first-in-first-out order, with first-word-fall-through behavior.
+Provides a buffer for data streams in first-in-first-out (FIFO) order, with first-word-fall-through (FWFT) behavior.
 
 ![alt text](draw/ds_fifo/bd_brief.drawio.svg)
 # Parameters
@@ -13,7 +13,7 @@ Provides a buffer for data streams in first-in-first-out order, with first-word-
 | --------- | ------------- | --------- | --------------------------- |
 | i_clk     | logic         | in        | Clock source                |
 | i_rst     | logic         | in        | Reset                       |
-| if_wr     | [ds_if](ds_if)     | slv       | Write data-stream interface |
+| if_wr     | [[ds_if]]     | slv       | Write data-stream interface |
 | if_wr_lvl | [[cm_if_lvl]] | mst       | Write level interface       |
 | if_rd     | [[ds_if]]     | mst       | Read data-stream interface  |
 | if_rd_lvl | [[cm_if_lvl]] | mst       | Read level interface        |
@@ -43,7 +43,7 @@ Provides a buffer for data streams in first-in-first-out order, with first-word-
 
 **Usage**: Used for small buffers, e.g. a handshake buffer
 
-**Note**: Input demultiplexer's output count is proportional to the *CAPACITY*.
+**Note**: The number of the demultiplexer's outputs is proportional to the *CAPACITY*.
 ## RAM Mode
 **Condition**: *ARCH* = FIFO_ARCH_RAM
 
@@ -63,5 +63,5 @@ This is the default FIFO mode for medium and large FIFOs.
 | Throughput | THP      | Shall    | Shall have 100% throughput. If the write and read transaction conditions both met, the FIFO shall not cause backpressure in either interfaces                                          | Except in [[#Half-Speed Mode]] |
 ## Operation Waveform
 ![alt text](draw/ds_fifo/wf_op.drawio.svg)
-# Architecture                                                                 
+# Architecture
 TODO

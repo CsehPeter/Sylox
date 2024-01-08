@@ -34,7 +34,7 @@ module ds_fifo #(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Memory
-    DTYPE q_mem [CAPACITY];
+    DTYPE q_mem [CAPACITY - 1 : 0];
 
     // Levels
     logic                                   q_full;
@@ -56,7 +56,7 @@ module ds_fifo #(
         end else begin : gen_dp
             case(ARCH)
 
-                FIFO_ARCH_RAM: begin
+                FIFO_ARCH_RAM: begin : gen_ram
                     // Pointers
                     logic [sclog2(CAPACITY) - 1 : 0] q_wr_ptr;
                     logic [sclog2(CAPACITY) - 1 : 0] q_rd_ptr;
@@ -84,9 +84,9 @@ module ds_fifo #(
                 end
 
 
-                FIFO_ARCH_SHR: begin
+                FIFO_ARCH_SHR: begin : gen_shr
                     always_ff @ (posedge i_clk) begin : p_mem
-                        for(u32 i = 0; i < CAPACITY - 1; i++)
+                        for(u32 i = 0; i < CAPACITY; i++)
 
                             case({if_rd.xfer, if_wr.xfer})
                                 2'b01:  // WR only
@@ -165,10 +165,10 @@ module ds_fifo #(
             always_ff @ (posedge i_clk) begin : proc_lvl
                 if(i_rst) begin
                     q_full      <= 1'b0;
-                    q_ewc       <= '0;
+                    q_ewc       <= CAPACITY;
                     q_ewc_gte   <= 1'b1;
 
-                    q_empty     <= 1'b0;
+                    q_empty     <= 1'b1;
                     q_wc        <= '0;
                     q_wc_gte    <= if_rd_lvl.lvl_thr == '0;
                 end else begin

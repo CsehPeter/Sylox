@@ -35,13 +35,13 @@ interface ds_if #(
 
 
     modport mst (
-        output data, vld,
-        input rdy, xfer
+        output data, rdy,
+        input vld, xfer
     );
 
     modport slv (
-        output rdy,
-        input vld, data, xfer
+        output vld,
+        input rdy, data, xfer
     );
 
 endinterface

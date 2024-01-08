@@ -12,18 +12,19 @@
 import sys_pkg_type::*;
 
 module cm_sort #(
-    parameter u32           DCNT    = 4,
-    parameter u32           DWIDTH  = 8,
-    parameter u32           REG_CNT = 1
+    parameter u32   DCNT    = 4,
+    parameter u32   DWIDTH  = 8,
+    parameter u32   REG_CNT = 1
 )(
-    input logic                                 i_clk,
-    input logic                                 i_rst,
+    input logic                                         i_clk,
+    input logic                                         i_rst,
 
-    input logic                                 i_vld,
-    input logic [DCNT - 1 : 0][DWIDTH - 1 : 0]  i_data,
+    input logic                                         i_vld,
+    input logic [DCNT - 1 : 0][DWIDTH - 1 : 0]          i_data,
 
-    output logic                                o_vld,
-    output logic [DCNT - 1 : 0][DWIDTH - 1 : 0] o_data
+    output logic                                        o_vld,
+    output logic [DCNT - 1 : 0][$clog2(DCNT) - 1 : 0]   o_idx,
+    output logic [DCNT - 1 : 0][DWIDTH - 1 : 0]         o_data
 );
     logic [DCNT - 1 : 0][DWIDTH - 1 : 0] c_net;
 
@@ -52,8 +53,8 @@ module cm_sort #(
                 l = bitwiseXOR (i, j); // in C-like languages this is "i ^ j"
                 if (l > i)
                     if (  (bitwiseAND (i, k) == 0) AND (arr[i] > arr[l])
-                       OR (bitwiseAND (i, k) != 0) AND (arr[i] < arr[l]) )
-                          swap the elements arr[i] and arr[l]
+                        OR (bitwiseAND (i, k) != 0) AND (arr[i] < arr[l]) )
+                        swap the elements arr[i] and arr[l]
     */
 
 endmodule
