@@ -33,6 +33,7 @@ class SortNetSegment():
         self.deg_idx = deg_idx
         self.stg_idx = stg_idx
         self.grp_idx = grp_idx
+        self.cmps = []
 
     def __repr__(self):
         return f"D: {self.deg_idx}, S: {self.stg_idx}, G: {self.grp_idx}, CMPS: {self.cmps}"
@@ -66,13 +67,14 @@ class SortNetSegment():
 class SortNet():
     def __init__(self, degree: int):
         self.degree = degree
+        self.in_cnt = 2 ** degree
         self.net = []
 
     def __repr__(self):
-        s = "\t"
+        s = f"\tDegree: {self.degree}, Input count: {self.in_cnt}, Size: {self.get_size()}\n\t"
         for seg in self.net:
             s += repr(seg) + "\n\t"
-        s = s[:-4]
+        s = s[:-2]
         return s
 
 
@@ -97,6 +99,45 @@ class SortNet():
             s += len(seg.cmps)
         return s
 
+    def remove_empty_stage(self):
+        rm_lst = []
+        for sgm in self.net:
+            if len(sgm.cmps) == 0:
+                rm_lst.append(sgm)
+        for rm in rm_lst:
+            self.net.remove(rm)
+
+    def remove_duplicant(self):
+        for i in range(1, len(self.net)):
+            a_lst = self.net[i - 1].cmps
+            b_lst = self.net[i].cmps
+
+            rm_lst = []
+            for a in a_lst:
+                if a in b_lst:
+                    rm_lst.append(a)
+            for rm in rm_lst:
+                b_lst.remove(rm)
+
+
+    def trim(self, in_cnt):
+        self.in_cnt = in_cnt
+        self.degree = int(math.ceil(math.log2(in_cnt)))
+
+        # Remove comparators
+        for sgm in self.net:
+            rm_lst = []
+            for cmp in sgm.cmps:
+                if cmp[0] >= in_cnt or cmp[1] >= in_cnt:
+                    rm_lst.append(cmp)
+            for rm in rm_lst:
+                sgm.cmps.remove(rm)
+
+        self.remove_empty_stage()
+        self.remove_duplicant()
+        self.remove_empty_stage()
+
+
 ####################################################################################################
 ## Specific Sorting Networks
 ####################################################################################################
@@ -107,15 +148,15 @@ class BatcherSortNet(SortNet):
         self.gen_batcher(degree)
 
     def __repr__(self):
-        return f"Batcher Sorting Network\n\tDegree: {self.degree}, Size: {self.get_size()}\n" + super().__repr__()
+        return f"Batcher Sorting Network\n" + super().__repr__()
 
     def gen_batcher(self, degree: int):
         for d in range(degree):                         # Degree
             for s in range(d + 1):                      # Stage
                 for g in range(2 ** (degree - d - 1)):  # Group
                     # Offset
-                    grp_offset = offset = 2 ** (d + 1) * g      # Starting index of the group
-                    cmp_offset = 2 ** (d - s)                   # Starting index of the comparator in the stage
+                    grp_offset = 2 ** (d + 1) * g       # Starting index of the group
+                    cmp_offset = 2 ** (d - s)           # Starting index of the comparator in the stage
                     if s == 0:
                         offset = grp_offset
                     else:
@@ -142,14 +183,14 @@ class BitonicSortNet(SortNet):
         self.gen_bitonic(degree)
 
     def __repr__(self):
-        return f"Bitonic Sorting Network\n\tDegree: {self.degree}, Size: {self.get_size()}\n" + super().__repr__()
+        return f"Bitonic Sorting Network\n" + super().__repr__()
 
     def gen_bitonic(self, degree: int):
         for d in range(degree):                         # Degree
             for s in range(d + 1):                      # Stage
                 for g in range(2 ** (degree - d - 1)):  # Group
                     # Offset
-                    grp_offset = offset = 2 ** (d + 1) * g      # Starting index of the group
+                    grp_offset = 2 ** (d + 1) * g       # Starting index of the group
                     offset = grp_offset
 
                     # Count
@@ -174,8 +215,9 @@ class BitonicSortNet(SortNet):
 ## Test
 ####################################################################################################
 
-max_degree = 4
+max_degree = 6
 max_test_cnt = 10**5
+
 
 def gen_test_cases(degree: int):
     test_cnt = math.factorial(2 ** degree)
@@ -196,14 +238,12 @@ def check_sort(vals: list):
     return True
 
 
-
-## Test whether the original bitonic network can sort
 def test_network(net_type: SortNet, verbose=False):
     if not verbose:
         sys.stdout = open(os.devnull, "w")
 
     ress = []
-    for d in range(1, max_degree):
+    for d in range(1, max_degree + 1):
         net = net_type(d)
         tests = gen_test_cases(d)
 
@@ -231,5 +271,11 @@ def test_network(net_type: SortNet, verbose=False):
 ####################################################################################################
 
 if __name__ == "__main__":
-    print(test_network(BitonicSortNet, False))
-    print(test_network(BatcherSortNet, True))
+    #res_bitonic = test_network(BitonicSortNet, False)
+    res_batcher = test_network(BatcherSortNet, True)
+    exit()
+
+    net = BatcherSortNet(3)
+    print(net)
+    net.trim(3)
+    print(net)
