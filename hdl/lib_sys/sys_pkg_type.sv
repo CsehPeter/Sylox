@@ -16,6 +16,11 @@ package sys_pkg_type;
     typedef int unsigned        u32;
     typedef longint unsigned    u64;
 
+    typedef byte signed         i8;
+    typedef shortint signed     i16;
+    typedef int signed          i32;
+    typedef longint signed      i64;
+
 endpackage
 
 `endif
