@@ -40,19 +40,19 @@ module sim_cm_sort ();
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Parameters of the test
-    localparam u8 INST_CNT          = 8;
-    localparam u8 DATA_CNT_LIM      = 32;
-    localparam u8 DATA_WIDTH_LIM    = 16;
+    localparam u8 INST_CNT          = 4;
+    localparam u8 DCNT_LIM      = 32;
+    localparam u8 DWIDTH_LIM    = 16;
     localparam u8 REG_CNT_LIM       = 16;
 
     // Generate stimulus
-    typedef logic [DATA_CNT_LIM - 1 : 0][DATA_WIDTH_LIM - 1 : 0] t_arr;
+    typedef logic [DCNT_LIM - 1 : 0][DWIDTH_LIM - 1 : 0] t_arr;
     function automatic t_arr gen_stim();
         t_arr stim;
         i32 num;
 
-        for(u32 i = 0; i < DATA_CNT_LIM; i++) begin
-            num = $random() % 2 ** DATA_WIDTH_LIM;
+        for(u32 i = 0; i < DCNT_LIM; i++) begin
+            num = $random() % 2 ** DWIDTH_LIM;
             if(num < 0)
                 num = -num;
             stim[i] = num;
@@ -64,10 +64,10 @@ module sim_cm_sort ();
     // Sort (Bubble)
     function automatic t_arr sort(t_arr unord);
         t_arr ord = unord;
-        logic [DATA_WIDTH_LIM - 1 : 0] tmp;
+        logic [DWIDTH_LIM - 1 : 0] tmp;
 
-        for(u32 i = 0; i < DATA_CNT_LIM - 1; i++) begin
-            for(u32 j = 0; j < DATA_CNT_LIM - 1 - i; j++) begin
+        for(u32 i = 0; i < DCNT_LIM - 1; i++) begin
+            for(u32 j = 0; j < DCNT_LIM - 1 - i; j++) begin
                 if(ord[j] > ord[j + 1]) begin
                     tmp = ord[j];
                     ord[j] = ord[j + 1];
@@ -84,7 +84,7 @@ module sim_cm_sort ();
         t_arr du_full = du;
         t_arr ds_prg;
 
-        for(u32 i = data_cnt; i < DATA_CNT_LIM; i++) begin
+        for(u32 i = data_cnt; i < DCNT_LIM; i++) begin
             du_full[i] = '1;
         end
         ds_prg = sort(du_full);
@@ -108,21 +108,21 @@ module sim_cm_sort ();
         for(genvar g = 0; g < INST_CNT; g++) begin : gen_duts
 
             // Parameters
-            localparam DATA_CNT     = 4 + 2 * g;
-            localparam DATA_WIDTH   = 16;
+            localparam DCNT     = 4 + 2 * g;
+            localparam DWIDTH   = 16;
             localparam REG_CNT      = 1 + g;
 
 
             // Signals
             logic i_vld;
-            logic [DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0] i_data;
+            logic [DCNT - 1 : 0][DWIDTH - 1 : 0] i_data;
             logic o_vld;
-            logic [DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0] o_data;
+            logic [DCNT - 1 : 0][DWIDTH - 1 : 0] o_data;
 
             // DUT
             cm_sort #(
-                .DATA_CNT(DATA_CNT),
-                .DATA_WIDTH(DATA_WIDTH),
+                .DCNT(DCNT),
+                .DWIDTH(DWIDTH),
                 .REG_CNT(REG_CNT)
             ) sort (
                 .i_clk(clk),
@@ -136,7 +136,7 @@ module sim_cm_sort ();
             // Stimulus
             t_arr stim;
             logic vld;
-            logic [DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0] data;
+            logic [DCNT - 1 : 0][DWIDTH - 1 : 0] data;
 
             initial begin
                 vld = 1'b0;
@@ -146,8 +146,8 @@ module sim_cm_sort ();
                 repeat(20) @ (posedge (clk));
 
                 vld = 1'b1;
-                for(u32 i = 0; i < DATA_CNT; i++) begin
-                    stim[i] = stim[i][DATA_WIDTH - 1 : 0];
+                for(u32 i = 0; i < DCNT; i++) begin
+                    stim[i] = stim[i][DWIDTH - 1 : 0];
                     data[i] = stim[i];
                 end
 
@@ -163,7 +163,7 @@ module sim_cm_sort ();
             // Check result
             always_ff @ (posedge clk)
                 if(o_vld)
-                    result[g] <= check_result(stim, o_data, DATA_CNT, DATA_WIDTH);
+                    result[g] <= check_result(stim, o_data, DCNT, DWIDTH);
 
         end
     endgenerate

@@ -11,6 +11,7 @@
 
 package sys_pkg_type;
 
+    // Integer
     typedef byte unsigned       u8;
     typedef shortint unsigned   u16;
     typedef int unsigned        u32;
@@ -20,6 +21,10 @@ package sys_pkg_type;
     typedef shortint signed     i16;
     typedef int signed          i32;
     typedef longint signed      i64;
+
+    // Float
+    typedef shortreal           f32;
+    typedef real                f64;
 
 endpackage
 

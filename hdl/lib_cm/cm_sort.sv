@@ -8,6 +8,7 @@
 //                      1. Generate sorting network that is the power of 2
 //                      2. Exclude nodes that are outside of the data count requirement
 //                      3. Merge stages if possible
+//                      4. Determine registered stages
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 `ifndef __CM_SORT
@@ -17,25 +18,25 @@ import sys_pkg_type::*;
 import sys_pkg_math::*;
 
 module cm_sort #(
-    parameter u32   DATA_CNT    = 4,
-    parameter u32   DATA_WIDTH  = 8,
+    parameter u32   DCNT        = 4,
+    parameter u32   DWIDTH      = 8,
     parameter u32   REG_CNT     = 2
 )(
-    input logic                                         i_clk,
-    input logic                                         i_rst,
+    input logic                                 i_clk,
+    input logic                                 i_rst,
 
-    input logic                                         i_vld,
-    input logic [DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0]  i_data,
+    input logic                                 i_vld,
+    input logic [DCNT - 1 : 0][DWIDTH - 1 : 0]  i_data,
 
-    output logic                                        o_vld,
-    output logic [DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0] o_data
+    output logic                                o_vld,
+    output logic [DCNT - 1 : 0][DWIDTH - 1 : 0] o_data
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global Parameters
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    localparam u32 DEGREE = $clog2(DATA_CNT);
+    localparam u32 DEGREE = $clog2(DCNT);
 
     // Node: represents the neccessary parameters to describe a node in the sorting network
     typedef struct {
@@ -48,8 +49,8 @@ module cm_sort #(
 // Parameters Of Full Sorting Network
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    localparam u32 STAGE_CNT_FULL   = sum_arith_seq(DEGREE);
-    typedef t_node t_net_full [STAGE_CNT_FULL - 1 : 0][DATA_CNT - 1 : 0];
+    localparam u32 STAGE_CNT_FULL = sum_arith_seq(DEGREE);
+    typedef t_node t_net_full [STAGE_CNT_FULL - 1 : 0][DCNT - 1 : 0];
 
     // Generate the model of Batcher sorting network
     function automatic t_net_full gen_full_net();
@@ -96,7 +97,7 @@ module cm_sort #(
                             idx_high = idx_low + size;
 
 
-                            if(idx_low < DATA_CNT && idx_high < DATA_CNT) begin     // Exclude comparators when DATA_CNT is not power of 2
+                            if(idx_low < DCNT && idx_high < DCNT) begin     // Exclude comparators when DCNT is not power of 2
 
                                 // Search if the comparator can be brought forward (merged to previous stage)
                                 idx_stage = sum_arith_seq(d) + s;
@@ -121,26 +122,11 @@ module cm_sort #(
             end
         end
 
-        net = gen_reg_stages(net);
         return net;
     endfunction
 
 
     localparam t_net_full PNET_FULL = gen_full_net();
-
-
-    // TODO: Dummy function, replace it with real
-    function automatic t_net_full gen_reg_stages(t_net_full net);
-        for(u32 i = 0; i < STAGE_CNT_FULL; i++) begin
-            for(u32 j = 0; j < DATA_CNT; j++) begin
-                if(i < REG_CNT) begin
-                    net[i][j].is_reg = 1'b1;
-                end
-            end
-        end
-
-        return net;
-    endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Stage Count Of Reduced Sorting Network
@@ -155,7 +141,7 @@ module cm_sort #(
 
             // Search for the presence of a comparator node
             is_empty = 1;
-            for(u32 j = 0; j < DATA_CNT; j++) begin
+            for(u32 j = 0; j < DCNT; j++) begin
                 if(net_full[i][j].is_comp == 1'b1) begin
                     red_stage_cnt += 1;
                     is_empty = 0;
@@ -178,17 +164,44 @@ module cm_sort #(
     localparam u32 STAGE_CNT = get_reduced_net_stage_cnt(PNET_FULL);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Registered Stages Of Reduced Sorting Network
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    typedef t_node t_net [STAGE_CNT - 1 : 0][DCNT - 1 : 0];
+
+    function automatic t_net gen_rs_net(t_net_full net_full);
+        t_net net;
+        u8 is_reg;
+
+        for(u32 i = 0; i < STAGE_CNT; i++) begin
+            is_reg = sys_pkg_fn::is_rb_reg(STAGE_CNT, REG_CNT, i);
+
+            for(u32 j = 0; j < DCNT; j++) begin
+                net[i][j] = net_full[i][j];
+
+                if(is_reg == 1)
+                    net[i][j].is_reg = 1'b1;
+            end
+        end
+
+        return net;
+    endfunction
+
+
+    localparam t_net PNET = gen_rs_net(PNET_FULL);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Declaration of network logic
-    logic [STAGE_CNT : 0][DATA_CNT - 1 : 0][DATA_WIDTH - 1 : 0] c_net;
+    logic [STAGE_CNT : 0][DCNT - 1 : 0][DWIDTH - 1 : 0] c_net;
 
 
     // Connect input to stage 0
     generate
         always_comb begin : p_input
-            for(u32 n = 0; n < DATA_CNT; n++) begin
+            for(u32 n = 0; n < DCNT; n++) begin
                 if(i_vld == 1'b1) begin
                     c_net[0][n] = i_data[n];
                 end else begin
@@ -198,16 +211,17 @@ module cm_sort #(
         end
     endgenerate
 
+
     // Generate comparators
     generate
         for(genvar s = 0; s < STAGE_CNT; s++) begin
-            for(genvar n = 0; n < DATA_CNT; n++) begin
+            for(genvar n = 0; n < DCNT; n++) begin
 
-                localparam u32 ia = n;                          // Self index
-                localparam u32 ib = PNET_FULL[s][n].idx_other;  // Other index
+                localparam u32 ia = n;                     // Self index
+                localparam u32 ib = PNET[s][n].idx_other;  // Other index
 
                 // Check for comparator
-                case({PNET_FULL[s][ia].is_comp, PNET_FULL[s][ia].is_reg})
+                case({PNET[s][ia].is_comp, PNET[s][ia].is_reg})
 
                     // Wire
                     2'b00: begin
@@ -254,9 +268,10 @@ module cm_sort #(
         end
     endgenerate
 
+
     // Connect output to the last stage
     generate
-        for(genvar n = 0; n < DATA_CNT; n++) begin
+        for(genvar n = 0; n < DCNT; n++) begin
             assign o_data[n] = c_net[STAGE_CNT][n];
         end
     endgenerate

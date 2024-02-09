@@ -10,6 +10,7 @@
 `define __SYS_PKG_FN
 
 import sys_pkg_type::*;
+import sys_pkg_math::*;
 
 package sys_pkg_fn;
 
@@ -29,13 +30,61 @@ package sys_pkg_fn;
 // Functions
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Saturated Ceil Log2
+    // Saturated ceil log2
+    //
     // Provides protection agains -1 width bitvector in signal declarations. E.g. "logic [sclog2(W) - 1 : 0] signal"
     function sys_pkg_type::u32 sclog2(sys_pkg_type::u32 num);
         if(num <= 1)
             return 1;
         else
             return $clog2(num);
+    endfunction
+
+
+    // Register balancer
+    //
+    // Returns if a stage considered registered by the register balancer
+    function sys_pkg_type::u8 is_rb_reg(sys_pkg_type::u32 ts, sys_pkg_type::u32 rs, sys_pkg_type::u32 si);
+        sys_pkg_type::f64 inc;      // Increment value
+        sys_pkg_type::f64 f_acc;
+        sys_pkg_type::u32 i_acc;
+        sys_pkg_type::u32 lo;
+        sys_pkg_type::u32 hi;
+        sys_pkg_type::u32 idx;
+
+
+        // Zero-length pipeline or no registered stages
+        if(ts == 0 || rs == 0)
+            return 0;
+
+        // Last stage
+        if(si == ts - 1)
+            return 1;
+
+        rs--;
+        ts--;
+        if(ts == 0 || rs == 0)
+            return 0;
+
+
+        inc = $itor(ts) / $itor(rs);
+        f_acc = 0.0;
+        i_acc = 0;
+
+        while(i_acc < ts) begin
+            f_acc += inc;
+
+            lo = i_acc;
+            hi = sys_pkg_math::round(f_acc) - 1;
+            idx = lo + (hi - lo) / 2;
+
+            if(idx == si)
+                return 1;
+
+            i_acc = sys_pkg_math::round(f_acc);
+        end
+
+        return 0;
     endfunction
 
 endpackage
