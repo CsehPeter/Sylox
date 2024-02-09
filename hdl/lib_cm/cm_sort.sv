@@ -38,26 +38,29 @@ module cm_sort #(
 
     localparam u32 DEGREE = $clog2(DCNT);
 
-    // Node: represents the neccessary parameters to describe a node in the sorting network
+    // Node: parameters to describe a point in the sorting network
     typedef struct {
-        bit is_reg;
         bit is_comp;
         u32 idx_other;
     } t_node;
+
+    // Stage: parameters to describe a collection of nodes
+    typedef struct {
+        bit is_reg;
+        t_node nodes [DCNT - 1 : 0];
+    } t_stage;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parameters Of Full Sorting Network
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     localparam u32 STAGE_CNT_FULL = sum_arith_seq(DEGREE);
-    typedef t_node t_net_full [STAGE_CNT_FULL - 1 : 0][DCNT - 1 : 0];
+    typedef t_stage t_net_full [STAGE_CNT_FULL - 1 : 0];
 
     // Generate the model of Batcher sorting network
     function automatic t_net_full gen_full_net();
         t_net_full net;
 
-        u32 grp_offset;
-        u32 cmp_offset;
         u32 offset;
         u32 cnt;
         u32 size;
@@ -71,12 +74,9 @@ module cm_sort #(
                 for(u32 g = 0; g < (2 ** (DEGREE - d - 1)); g++) begin      // Group
 
                     // Offset
-                    grp_offset = 2 ** (d + 1) * g;      // Starting index of the group
-                    cmp_offset = 2 ** (d - s);          // Starting index of the comparator in the stage
-                    if(s == 0)
-                        offset = grp_offset;
-                    else
-                        offset = grp_offset + cmp_offset;
+                    offset = 2 ** (d + 1) * g;      // Starting index of the group
+                    if(s > 0)
+                        offset += 2 ** (d - s);     // Starting index of the comparator in the group
 
                     // Count
                     if(s == 0)
@@ -97,23 +97,24 @@ module cm_sort #(
                             idx_high = idx_low + size;
 
 
-                            if(idx_low < DCNT && idx_high < DCNT) begin     // Exclude comparators when DCNT is not power of 2
+                            if(idx_low < DCNT && idx_high < DCNT) begin     // Exclude comparators out of DCNT (when DCNT is not power of 2)
 
-                                // Search if the comparator can be brought forward (merged to previous stage)
+                                // Search if the comparator can be moved back to an earlier stage
                                 idx_stage = sum_arith_seq(d) + s;
-                                if(idx_stage > 0)
+                                if(idx_stage > 0) begin
                                     for(u32 is = idx_stage - 1; is > 0; is--) begin
-                                        if(net[is][idx_low].is_comp != 1'b0 || net[is][idx_high].is_comp != 1'b0)
+                                        if(net[is].nodes[idx_low].is_comp != 1'b0 || net[is].nodes[idx_high].is_comp != 1'b0)
                                             break;
                                         idx_stage = is;
                                     end
+                                end
 
                                 // Assign comparators
-                                net[idx_stage][idx_low].is_comp = 1'b1;
-                                net[idx_stage][idx_low].idx_other = idx_high;
+                                net[idx_stage].nodes[idx_low].is_comp = 1'b1;
+                                net[idx_stage].nodes[idx_low].idx_other = idx_high;
 
-                                net[idx_stage][idx_high].is_comp = 1'b1;
-                                net[idx_stage][idx_high].idx_other = idx_low;
+                                net[idx_stage].nodes[idx_high].is_comp = 1'b1;
+                                net[idx_stage].nodes[idx_high].idx_other = idx_low;
                             end
                         end
                     end
@@ -132,23 +133,23 @@ module cm_sort #(
 // Stage Count Of Reduced Sorting Network
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Get the number of stages of a reduced network
+    // Get the number of stages of a reduced network (comparators are moved back and empty stages eliminated)
     function automatic u32 get_reduced_net_stage_cnt(t_net_full net_full);
         u32 red_stage_cnt = 0;
         u8 is_empty = 1;
 
-        for(u32 i = 0; i < STAGE_CNT_FULL; i++) begin
+        for(u32 s = 0; s < STAGE_CNT_FULL; s++) begin
 
             // Search for the presence of a comparator node
             is_empty = 1;
-            for(u32 j = 0; j < DCNT; j++) begin
-                if(net_full[i][j].is_comp == 1'b1) begin
+            for(u32 n = 0; n < DCNT; n++) begin
+                if(net_full[s].nodes[n].is_comp == 1'b1) begin
                     red_stage_cnt += 1;
                     is_empty = 0;
                     break;
                 end
 
-                if(is_empty == 0)
+                if(is_empty == 0)   // Move on if any comparator is found
                     break;
             end
 
@@ -167,20 +168,17 @@ module cm_sort #(
 // Registered Stages Of Reduced Sorting Network
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    typedef t_node t_net [STAGE_CNT - 1 : 0][DCNT - 1 : 0];
+    typedef t_stage t_net [STAGE_CNT - 1 : 0];
 
     function automatic t_net gen_rs_net(t_net_full net_full);
         t_net net;
         u8 is_reg;
 
-        for(u32 i = 0; i < STAGE_CNT; i++) begin
-            is_reg = sys_pkg_fn::is_rb_reg(STAGE_CNT, REG_CNT, i);
+        for(u32 s = 0; s < STAGE_CNT; s++) begin
+            net[s].is_reg = sys_pkg_fn::is_rb_reg(STAGE_CNT, REG_CNT, s);
 
-            for(u32 j = 0; j < DCNT; j++) begin
-                net[i][j] = net_full[i][j];
-
-                if(is_reg == 1)
-                    net[i][j].is_reg = 1'b1;
+            for(u32 n = 0; n < DCNT; n++) begin
+                net[s].nodes[n] = net_full[s].nodes[n];
             end
         end
 
@@ -199,6 +197,9 @@ module cm_sort #(
 
 
     // Connect input to stage 0
+
+    assign c_net[0] = i_data;
+    /*
     generate
         always_comb begin : p_input
             for(u32 n = 0; n < DCNT; n++) begin
@@ -210,71 +211,60 @@ module cm_sort #(
             end
         end
     endgenerate
+    */
 
 
     // Generate comparators
     generate
         for(genvar s = 0; s < STAGE_CNT; s++) begin
+
+            logic [DCNT - 1 : 0][DWIDTH - 1 : 0] c_stage;
+
             for(genvar n = 0; n < DCNT; n++) begin
 
-                localparam u32 ia = n;                     // Self index
-                localparam u32 ib = PNET[s][n].idx_other;  // Other index
+                localparam u32 ia = n;                          // Self index
+                localparam u32 ib = PNET[s].nodes[n].idx_other; // Other index
 
-                // Check for comparator
-                case({PNET[s][ia].is_comp, PNET[s][ia].is_reg})
-
-                    // Wire
-                    2'b00: begin
-                        assign c_net[s + 1][ia] = c_net[s][ia];
-                    end
-
-                    // Register
-                    2'b01: begin
-                        always_ff @ (posedge i_clk)
-                            c_net[s + 1][ia] <= c_net[s][ia];
-                    end
-
-                    // Comparator
-                    2'b10: begin
-                        if(ib > ia) begin
-                            always_comb begin : p_comb_cmp
-                                if(c_net[s][ia] > c_net[s][ib]) begin
-                                    c_net[s + 1][ia] = c_net[s][ib];
-                                    c_net[s + 1][ib] = c_net[s][ia];
-                                end else begin
-                                    c_net[s + 1][ia] = c_net[s][ia];
-                                    c_net[s + 1][ib] = c_net[s][ib];
-                                end
+                // Comparator or wire
+                if(PNET[s].nodes[ia].is_comp) begin
+                    if(ib > ia) begin
+                        always_comb begin : p_cmp
+                            if(c_net[s][ia] > c_net[s][ib]) begin
+                                c_stage[ia] = c_net[s][ib];
+                                c_stage[ib] = c_net[s][ia];
+                            end else begin
+                                c_stage[ia] = c_net[s][ia];
+                                c_stage[ib] = c_net[s][ib];
                             end
                         end
                     end
+                end else begin
+                    assign c_stage[ia] = c_net[s][ia];
+                end
 
-                    // Comparator + register
-                    2'b11: begin
-                        if(ib > ia) begin
-                            always_ff @ (posedge i_clk) begin : p_seq_cmp
-                                if(c_net[s][ia] > c_net[s][ib]) begin
-                                    c_net[s + 1][ia] <= c_net[s][ib];
-                                    c_net[s + 1][ib] <= c_net[s][ia];
-                                end else begin
-                                    c_net[s + 1][ia] <= c_net[s][ia];
-                                    c_net[s + 1][ib] <= c_net[s][ib];
-                                end
-                            end
-                        end
-                    end
-                endcase
+                // Register or combinational stage
+                if(PNET[s].is_reg) begin : p_reg
+                    always_ff @ (posedge i_clk)
+                        c_net[s + 1][ia] <= c_stage[ia];
+                end else begin : p_comb
+                    assign c_net[s + 1][ia] = c_stage[ia];
+                end
+
             end
         end
     endgenerate
 
 
     // Connect output to the last stage
+    assign o_data = c_net[STAGE_CNT];
+
+    /*
     generate
         for(genvar n = 0; n < DCNT; n++) begin
             assign o_data[n] = c_net[STAGE_CNT][n];
         end
     endgenerate
+    */
 
 
     // Valid shift register

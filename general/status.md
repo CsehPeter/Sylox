@@ -6,7 +6,6 @@ kanban-plugin: basic
 
 ## Backlog
 
-- [ ] cm_sort
 - [ ] cm_arbiter
 - [ ] ds_icon
 
@@ -14,6 +13,7 @@ kanban-plugin: basic
 ## Ongoing
 
 - [ ] ds_fifo
+- [ ] cm_sort
 
 
 ## Done

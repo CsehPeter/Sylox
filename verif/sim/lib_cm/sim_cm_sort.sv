@@ -40,10 +40,10 @@ module sim_cm_sort ();
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Parameters of the test
-    localparam u8 INST_CNT          = 4;
+    localparam u8 INST_CNT      = 4;
     localparam u8 DCNT_LIM      = 32;
     localparam u8 DWIDTH_LIM    = 16;
-    localparam u8 REG_CNT_LIM       = 16;
+    localparam u8 REG_CNT_LIM   = 16;
 
     // Generate stimulus
     typedef logic [DCNT_LIM - 1 : 0][DWIDTH_LIM - 1 : 0] t_arr;
@@ -80,7 +80,7 @@ module sim_cm_sort ();
     endfunction
 
     // Check
-    function automatic u8 check_result(t_arr du, t_arr ds, u32 data_cnt, u32 data_width);
+    function automatic bit check_result(t_arr du, t_arr ds, u32 data_cnt, u32 data_width);
         t_arr du_full = du;
         t_arr ds_prg;
 
@@ -92,17 +92,17 @@ module sim_cm_sort ();
 
         for(u32 i = 0; i < data_cnt; i++) begin
             if(ds[i] != ds_prg[i])
-                return 0;
+                return 1'b0;
         end
 
-        return 1;
+        return 1'b1;
     endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // DUTs
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    u8 result [INST_CNT - 1 : 0];
+    logic result [INST_CNT - 1 : 0];
 
     generate
         for(genvar g = 0; g < INST_CNT; g++) begin : gen_duts

@@ -44,7 +44,7 @@ package sys_pkg_fn;
     // Register balancer
     //
     // Returns if a stage considered registered by the register balancer
-    function sys_pkg_type::u8 is_rb_reg(sys_pkg_type::u32 ts, sys_pkg_type::u32 rs, sys_pkg_type::u32 si);
+    function bit is_rb_reg(sys_pkg_type::u32 ts, sys_pkg_type::u32 rs, sys_pkg_type::u32 si);
         sys_pkg_type::f64 inc;      // Increment value
         sys_pkg_type::f64 f_acc;
         sys_pkg_type::u32 i_acc;
@@ -55,16 +55,16 @@ package sys_pkg_fn;
 
         // Zero-length pipeline or no registered stages
         if(ts == 0 || rs == 0)
-            return 0;
+            return 1'b0;
 
         // Last stage
         if(si == ts - 1)
-            return 1;
+            return 1'b1;
 
         rs--;
         ts--;
         if(ts == 0 || rs == 0)
-            return 0;
+            return 1'b0;
 
 
         inc = $itor(ts) / $itor(rs);
@@ -79,12 +79,12 @@ package sys_pkg_fn;
             idx = lo + (hi - lo) / 2;
 
             if(idx == si)
-                return 1;
+                return 1'b1;
 
             i_acc = sys_pkg_math::round(f_acc);
         end
 
-        return 0;
+        return 1'b0;
     endfunction
 
 endpackage

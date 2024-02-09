@@ -6,7 +6,7 @@ Provides a pipelined, parallel sorting logic.
 | Name    | Type | Default | Range | Description                                               | Comment                                   |
 | ------- | ---- | ------- | ----- | --------------------------------------------------------- | ----------------------------------------- |
 | DCNT    | u32  | 4       | 2..   | Number of individual data signals that needs to be sorted |                                           |
-| DWIDTH  | u32  | 8       | 1..   | Data Width                                                |                                           |
+| DWIDTH  | u32  | 8       | 1..   | Data width of a single data signal                                                |                                           |
 | REG_CNT | u32  | 1       | 0..   | Number of registered stages                               | The maximum is the total number of stages |
 # Ports
 | Name   | Type        | Direction | Description                |
