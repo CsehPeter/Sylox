@@ -13,27 +13,19 @@ import sys_pkg_type::*;
 
 package cm_pkg;
 
-    // Order
+    // Shift register
     typedef enum {
-                    ORD_MIN,    // Minimum value of the elements
-                    ORD_MAX,    // Maximum value of the elements
-                    ORD_SORT    // Sorted array
-    } t_ord_type;
+        SHR_RST_FIRST,
+        SHR_RST_FULL
+    } t_shr_rst;
 
     // Arbiter
     typedef enum {
-                    ARB_MIN,
-                    ARB_MAX
-                    // TODO: add more
+        ARB_MIN,
+        ARB_MAX
+        // TODO: add more
     } t_arb_algo;
 
-
-
-    /*
-    function bit is_stage_reg(sys_pkg_type::u32 total_stage_cnt, sys_pkg_type::u32 reg_stage_cnt, sys_pkg_type::u32 cur_stage);
-
-    endfunction
-    */
 
 endpackage
 

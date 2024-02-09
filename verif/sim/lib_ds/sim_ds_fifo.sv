@@ -82,16 +82,16 @@ module sim_ds_fifo ();
 
             // DUT
             ds_fifo #(
-                .DTYPE      (DTYPE),
                 .CAPACITY   (DUT_CFG[g].capacity),
+                .DTYPE      (DTYPE),
                 .ARCH       (DUT_CFG[g].arch)
             ) fifo (
-                .i_clk          (clk),
-                .i_rst          (rst),
-                .if_wr          (if_wr),
-                .if_if_wr_lvl   (if_wr_lvl),
-                .if_rd          (if_rd),
-                .if_if_rd_lvl   (if_rd_lvl)
+                .i_clk      (clk),
+                .i_rst      (rst),
+                .if_wr      (if_wr),
+                .if_wr_lvl  (if_wr_lvl),
+                .if_rd      (if_rd),
+                .if_rd_lvl  (if_rd_lvl)
             );
 
             // Drive

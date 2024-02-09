@@ -3,10 +3,10 @@ Provides a buffer for data streams in first-in-first-out (FIFO) order, with firs
 
 ![alt text](draw/ds_fifo/bd_brief.drawio.svg)
 # Parameters
-| Name     | Type        | Default       | Range | Description                                    | Comment        |
-| -------- | ----------- | ------------- | ----- | ---------------------------------------------- | -------------- |
-| DTYPE    | type        | logic [7 : 0] | -     | Data type of a FIFO word                       |                |
-| CAPACITY | u32         | 8             | 0..   | Number of words that can be stored in the FIFO |                |
+| Name     | Type        | Default       | Range | Description                                    | Comment                      |
+| -------- | ----------- | ------------- | ----- | ---------------------------------------------- | ---------------------------- |
+| CAPACITY | u32         | 8             | 0..   | Number of words that can be stored in the FIFO |                              |
+| DTYPE    | type        | logic [7 : 0] | -     | Data type of a FIFO word                       |                              |
 | ARCH     | t_fifo_arch | FIFO_ARCH_RAM | -     | FIFO architecture                              | [[ds_pkg#FIFO Architecture]] |
 # Ports
 | Name      | Type          | Direction | Description                 |

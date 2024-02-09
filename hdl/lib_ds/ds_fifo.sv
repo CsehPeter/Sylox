@@ -16,8 +16,8 @@ import sys_pkg_fn::*;
 import ds_pkg::*;
 
 module ds_fifo #(
-    parameter type          DTYPE       = logic [7 : 0],
     parameter u32           CAPACITY    = 8,
+    parameter type          DTYPE       = logic [7 : 0],
     parameter t_fifo_arch   ARCH        = FIFO_ARCH_RAM
 )(
     input logic     i_clk,
@@ -51,13 +51,13 @@ module ds_fifo #(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     generate
-        if(CAPACITY == 0) begin : gen_bypass_dp
+        if(CAPACITY == 0) begin : g_bypass_dp
             assign if_rd.data = if_wr.data;
 
-        end else begin : gen_dp
+        end else begin : g_dp
             case(ARCH)
 
-                FIFO_ARCH_RAM: begin : gen_ram
+                FIFO_ARCH_RAM: begin : g_ram
                     // Pointers
                     logic [sclog2(CAPACITY) - 1 : 0] q_wr_ptr;
                     logic [sclog2(CAPACITY) - 1 : 0] q_rd_ptr;
@@ -85,7 +85,7 @@ module ds_fifo #(
                 end
 
 
-                FIFO_ARCH_SHR: begin : gen_shr
+                FIFO_ARCH_SHR: begin : g_shr
                     always_ff @ (posedge i_clk) begin : p_mem
                         for(u32 i = 0; i < CAPACITY; i++)
 
@@ -117,13 +117,13 @@ module ds_fifo #(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     generate
-        if(CAPACITY == 0) begin : gen_bypass_hs
+        if(CAPACITY == 0) begin : g_bypass_hs
             assign if_wr.rdy = if_rd.rdy;
             assign if_rd.vld = if_wr.vld;
 
-        end else begin : gen_hs
+        end else begin : g_hs
 
-            always_ff @ (posedge i_clk) begin : proc_hs
+            always_ff @ (posedge i_clk) begin : p_hs
                 if(i_rst) begin
                     if_wr.rdy <= 1'b1;
                     if_rd.vld <= 1'b0;
@@ -152,7 +152,7 @@ module ds_fifo #(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     generate
-        if(CAPACITY == 0) begin : gen_bypass_lvl
+        if(CAPACITY == 0) begin : g_bypass_lvl
             assign if_wr_lvl.lim        = 1'b0;
             assign if_wr_lvl.lvl        = '0;
             assign if_wr_lvl.lvl_gte    = 1'b0;
@@ -161,9 +161,9 @@ module ds_fifo #(
             assign if_rd_lvl.lvl        = '0;
             assign if_rd_lvl.lvl_gte    = 1'b0;
 
-        end else begin : gen_lvl
+        end else begin : g_lvl
 
-            always_ff @ (posedge i_clk) begin : proc_lvl
+            always_ff @ (posedge i_clk) begin : p_lvl
                 if(i_rst) begin
                     q_full      <= 1'b0;
                     q_ewc       <= CAPACITY;

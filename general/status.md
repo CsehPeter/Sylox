@@ -10,14 +10,20 @@ kanban-plugin: basic
 - [ ] ds_icon
 
 
-## Ongoing
+## Design
 
 - [ ] ds_fifo
 - [ ] cm_sort
+- [ ] cm_shr
+
+
+## Verification
+
 
 
 ## Done
 
+**Complete**
 
 
 
