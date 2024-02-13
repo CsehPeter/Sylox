@@ -1,7 +1,7 @@
 # Brief
-Provides a pipelined, parallel sorting logic.
+Provides a pipelined, parallel sorting logic. Uses Batcher odd-even sorting. Lowest data goes to the lowest index.
 
-![alt text](draw/cm_sort/bd_top.drawio.svg)
+![alt text](draw/svg/cm_sort_bd_brief.drawio.svg)
 # Parameters
 | Name    | Type | Default | Range | Description                                               | Comment                                   |
 | ------- | ---- | ------- | ----- | --------------------------------------------------------- | ----------------------------------------- |

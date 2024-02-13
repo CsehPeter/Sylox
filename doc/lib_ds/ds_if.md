@@ -18,19 +18,19 @@ Possible values: FC_NO, FC_UNI, FC_BI
 Uncontrolled. There is no flow control, all data in every clock cycle is valid.
 - Flow-control signals: -
 
-![alt text](draw/ds_if/wf_no.drawio.svg)
+![alt text](draw/svg/ds_if_wf_no.drawio.svg)
 ## FC_UNI
 Unidirectional. Only the transmitter has to initiate the transaction, the receiver can't decline.
 - Flow-control signals: *vld*
 
-![alt text](draw/ds_if/wf_uni.drawio.svg)
+![alt text](draw/svg/ds_if_wf_uni.drawio.svg)
 ## FC_BI
 Bidirectional. Both blocks has to accept the transaction (handshake).
 - Flow-control signals: *vld*, *rdy*
 
-![alt text](draw/ds_if/wf_bi.drawio.svg)
+![alt text](draw/svg/ds_if_wf_bi.drawio.svg)
 # Modport
 - Master (mst): In master mode, the module that implements the interface, is the transmitter
 - Slave (slv): in slave mode, the module that implements the interface, is the receiver
 
-![alt text](draw/ds_if/bd_modport.drawio.svg)
+![alt text](draw/svg/ds_if_bd_modport.drawio.svg)

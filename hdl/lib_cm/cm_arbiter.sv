@@ -81,7 +81,7 @@ module cm_arbiter #(
     logic [DCNT - 1 : 0][IDX_WIDTH - 1 : 0] w_idx;
     generate
         for(genvar i = 0; i < DCNT; i++) begin
-            assign w_idx[i] = i[IDX_WIDTH - 1 : 0];
+            assign w_idx[i] = i[IDX_WIDTH - 1 : 0];     // TODO: dummy should be used for not requested
         end
     endgenerate
 

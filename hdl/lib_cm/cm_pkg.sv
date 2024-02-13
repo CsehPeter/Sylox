@@ -16,7 +16,7 @@ package cm_pkg;
     // Shift register
     typedef enum {
         SHR_RST_FIRST,
-        SHR_RST_FULL
+        SHR_RST_ALL
     } t_shr_rst;
 
     // Arbiter

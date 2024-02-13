@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
 // Library      : lib_cm
-// Description  :
+// Description  : Simple shift register for delaying data
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 `ifndef __CM_SHR
@@ -40,7 +40,7 @@ module cm_shr #(
                         else
                             q_shr[i] <= i_data;
                     end else begin
-                        if(i_rst == 1'b1 && RST_MODE == SHR_RST_FULL)
+                        if(i_rst == 1'b1 && RST_MODE == SHR_RST_ALL)
                             q_shr[i] <= '0;
                         else
                             q_shr[i] <= q_shr[i - 1];

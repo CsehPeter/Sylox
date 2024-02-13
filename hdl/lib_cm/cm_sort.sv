@@ -3,8 +3,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
 // Library      : lib_cm
-// Description  : Provides a pipelined, parallel sorting logic. Uses Batcher odd-even sorting
-//                  Steps of generating the network:
+// Description  : Provides a pipelined, parallel sorting logic. Uses Batcher odd-even sorting.
+//                Lowest data goes to the lowest index
+//                - Steps of generating the network:
 //                      1. Generate sorting network that is the power of 2
 //                      2. Exclude nodes that are outside of the data count requirement
 //                      3. Merge stages if possible
@@ -33,6 +34,8 @@ module cm_sort #(
     output logic                                o_vld,
     output logic [DCNT - 1 : 0][DWIDTH - 1 : 0] o_data
 );
+
+// TODO: Handle the case if REG_CNT is greater than stage count.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global Parameters
@@ -228,7 +231,7 @@ module cm_sort #(
     cm_shr #(
         .LEN(REG_CNT),
         .DTYPE(logic),
-        .RST_MODE(SHR_RST_FULL)
+        .RST_MODE(SHR_RST_ALL)
     ) inst_vld_shr (
         .i_clk(i_clk),
         .i_rst(i_rst),

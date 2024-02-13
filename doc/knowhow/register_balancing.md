@@ -1,4 +1,4 @@
-A register balancer should spread the register stages equally among the total stages. When choosing the place for the registers:
+In a pipeline, where each pipeline stage consists of the same operation (homogenous), a register balancer should spread the register stages equally among the total stages. When choosing the place for the registers:
 - Last stage should have priority over the other stages. This enables to have the right signal drive for the output
 - The equally places stages should prioritize the stages closer to the input
 
