@@ -13,15 +13,15 @@ import sys_pkg_type::*;
 import cm_pkg::*;
 
 module cm_arbiter #(
-    parameter u32           DCNT    = 4,
-    parameter u32           DWIDTH  = 8,
-    parameter u32           REG_CNT = 2,
-    parameter t_arb_algo    ALGO    = ARB_MIN,
+    parameter u32           DCNT        = 4,        // Data count
+    parameter u32           DWIDTH      = 8,        // Data width
+    parameter u32           REG_CNT     = 2,        // Register count, equal to total latency
+    parameter t_arb_algo    ALGO        = ARB_MAX,  // Arbitration algorithm
 
-    localparam u32          IDX_WIDTH = sclog2(DWIDTH)
+    localparam u32          IDX_WIDTH = sclog2(DCNT)
 )(
-    input logic     i_clk,
-    input logic     i_rst,
+    input logic                                 i_clk,
+    input logic                                 i_rst,
 
     input logic [DCNT - 1 : 0]                  i_req,
     input logic [DCNT - 1 : 0][DWIDTH - 1 : 0]  i_weight,
@@ -52,20 +52,17 @@ module cm_arbiter #(
                 arb.idx = DCNT - 1;
             end
         endcase
+
+        return arb;
     endfunction
 
     localparam t_arb ARB = get_arb();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//
+// Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: index 0 should be preferred in case of equal weights
-// For MIN 0th index's weight should be 0. For MAX 0th index's weight should be the maximum value
-
-
-
-    // Input MUX
+    // Input weight MUX
     logic [DCNT - 1 : 0][DWIDTH - 1 : 0] c_weight;
 
     always_comb begin : p_imux
@@ -77,17 +74,20 @@ module cm_arbiter #(
         end
     end
 
-    // Index assignment
+    // Input index assignment
     logic [DCNT - 1 : 0][IDX_WIDTH - 1 : 0] w_idx;
     generate
         for(genvar i = 0; i < DCNT; i++) begin
-            assign w_idx[i] = i[IDX_WIDTH - 1 : 0];     // TODO: dummy should be used for not requested
+            case(ALGO)
+                ARB_MIN:    assign w_idx[i] = i;
+                ARB_MAX:    assign w_idx[i] = (DCNT - 1) - i;
+            endcase
         end
     endgenerate
 
     // Weight extension with width
-    localparam u32 FULL_DWIDTH = DWIDTH + IDX_WIDTH;
-    logic [DCNT - 1 : 0][FULL_DWIDTH - 1 : 0] c_data;
+    localparam u32 EXT_DWIDTH = DWIDTH + IDX_WIDTH;
+    logic [DCNT - 1 : 0][EXT_DWIDTH - 1 : 0] c_data;
 
     generate
         for(genvar i = 0; i < DCNT; i++) begin
@@ -98,11 +98,11 @@ module cm_arbiter #(
     // Sort
     logic c_vld;
     assign c_vld = |i_req;
-    logic [DCNT - 1 : 0][FULL_DWIDTH - 1 : 0] w_ord_data;
+    logic [DCNT - 1 : 0][EXT_DWIDTH - 1 : 0] w_ord_data;
 
     cm_sort #(
         .DCNT(DCNT),
-        .DWIDTH(FULL_DWIDTH),
+        .DWIDTH(EXT_DWIDTH),
         .REG_CNT(REG_CNT)
     ) inst_sort (
         .i_clk(i_clk),
@@ -113,8 +113,13 @@ module cm_arbiter #(
         .o_data(w_ord_data)
     );
 
-    // Slice grant value
-    assign o_gnt = w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];  // TODO: back conversion for proper weight index
+    // Grant slice with conversion
+    generate
+        case(ALGO)
+            ARB_MIN:    assign o_gnt = w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];
+            ARB_MAX:    assign o_gnt = (DCNT - 1) - w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];
+        endcase
+    endgenerate
 
 endmodule
 
