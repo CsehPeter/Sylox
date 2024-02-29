@@ -127,13 +127,13 @@ module sim_cm_arbiter ();
                     req = '1;
                     for(u32 i = 0; i < DCNT; i++)
                         weight[i] = gen_stim();
-                    /*
-                    @ (posedge clk);
-                    req = '0;
-                    weight = '{default: '0};
-                    */
                     @ (posedge clk);
                 end
+
+                weight = '{default: '0};
+                @ (posedge clk);
+                weight = '{default: '1};
+                @ (posedge clk);
             end
 
         end

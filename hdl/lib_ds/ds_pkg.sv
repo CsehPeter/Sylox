@@ -29,6 +29,12 @@ package ds_pkg;
                     FIFO_ARCH_SHR       // Shift register based architecture
                 } t_fifo_arch;
 
+    // Interconnect architecture types
+    typedef enum {
+                    ICON_ARCH_PARALLEL,
+                    ICON_ARCH_SERIAL
+    } t_icon_arch;
+
 endpackage
 
 `endif

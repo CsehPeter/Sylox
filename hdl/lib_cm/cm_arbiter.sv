@@ -78,14 +78,11 @@ module cm_arbiter #(
     logic [DCNT - 1 : 0][IDX_WIDTH - 1 : 0] w_idx;
     generate
         for(genvar i = 0; i < DCNT; i++) begin
-            case(ALGO)
-                ARB_MIN:    assign w_idx[i] = i;
-                ARB_MAX:    assign w_idx[i] = (DCNT - 1) - i;
-            endcase
+            assign w_idx[i] = i;
         end
     endgenerate
 
-    // Weight extension with width
+    // Weight extension with index
     localparam u32 EXT_DWIDTH = DWIDTH + IDX_WIDTH;
     logic [DCNT - 1 : 0][EXT_DWIDTH - 1 : 0] c_data;
 
@@ -113,13 +110,8 @@ module cm_arbiter #(
         .o_data(w_ord_data)
     );
 
-    // Grant slice with conversion
-    generate
-        case(ALGO)
-            ARB_MIN:    assign o_gnt = w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];
-            ARB_MAX:    assign o_gnt = (DCNT - 1) - w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];
-        endcase
-    endgenerate
+    // Grant slice
+    assign o_gnt = w_ord_data[ARB.idx][IDX_WIDTH - 1 : 0];
 
 endmodule
 

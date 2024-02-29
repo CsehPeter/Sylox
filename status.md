@@ -1,10 +1,11 @@
 
-| Component       | File       | Done  | Design  | Verification | Documentation | Comment                     |
-| --------------- | ---------- |:-----:| ------- | ------------ | ------------- | --------------------------- |
-| Shift Register  | cm_shr.sv  | ==1== | DONE    | DONE*     | DONE          |  |
-| FIFO            | ds_fifo.sv | ==1== | DONE    | DONE*        | DONE          |      |
-| Sorting Network | cm_sort.sv | ==0== | DONE    | DONE         | TODO          |                             |
-| Arbiter         | cm_arbiter | ==0== | ONGOING | TODO         | TODO          |                             |
+| Component       | File       | Done  | Design  | Verification | Documentation | Comment |
+| --------------- | ---------- | :---: | ------- | ------------ | ------------- | ------- |
+| Shift Register  | cm_shr     | ==1== | DONE    | DONE*        | DONE          |         |
+| FIFO            | ds_fifo    | ==1== | DONE    | DONE*        | DONE          |         |
+| Sorting Network | cm_sort    | ==0== | DONE    | DONE         | TODO          |         |
+| Arbiter         | cm_arbiter | ==0== | ONGOING | TODO         | TODO          |         |
+| Interconnect    | ds_icon    | ==0== | ONGOING | TODO         | TODO          |         |
 \*Only the waveform is inspected, no proper test is done. Expect bugs.
 # Guide
 The project is build-up of libraries, which contains modules. Each module's status shall be managed.

@@ -43,7 +43,7 @@ package sys_pkg_fn;
 
     // Register balancer
     //
-    // Returns if a stage considered registered by the register balancer
+    // Returns true if a stage considered registered by the register balancer
     function bit is_rb_reg(sys_pkg_type::u32 ts, sys_pkg_type::u32 rs, sys_pkg_type::u32 si);
         sys_pkg_type::f64 inc;      // Increment value
         sys_pkg_type::f64 f_acc;

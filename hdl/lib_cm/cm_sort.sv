@@ -38,7 +38,7 @@ module cm_sort #(
 // TODO: Handle the case if REG_CNT is greater than stage count.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Global Parameters
+// Types & Parameters
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     localparam u32 DEGREE = $clog2(DCNT);
@@ -50,7 +50,7 @@ module cm_sort #(
         u32 idx_other;
     } t_pnode;
 
-    // Stage: parameters to describe an array of nodes
+    // Stage: parameters to describe an array of nodes that belongs to the same stage of the network
     typedef struct {
         bit is_reg;
         t_pnode nodes [DCNT - 1 : 0];
@@ -184,11 +184,11 @@ module cm_sort #(
 
     // Generate comparators
     generate
-        for(genvar s = 0; s < PNET.stage_cnt; s++) begin
+        for(genvar s = 0; s < PNET.stage_cnt; s++) begin : g_stage
 
             logic [DCNT - 1 : 0][DWIDTH - 1 : 0] c_stage;
 
-            for(genvar n = 0; n < DCNT; n++) begin
+            for(genvar n = 0; n < DCNT; n++) begin : g_node
 
                 localparam u32 ia = n;                                  // Self index
                 localparam u32 ib = PNET.stages[s].nodes[n].idx_other;  // Other index
