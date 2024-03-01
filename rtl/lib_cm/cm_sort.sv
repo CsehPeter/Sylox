@@ -224,7 +224,7 @@ module cm_sort #(
                     assign c_stage[ia] = c_net[s][ia];
                 end
 
-                // Registered stages (0 length for combinational)
+                // Shift register for registered stages (0 length for combinational)
                 cm_shr #(
                     .LEN(PNET.stages[s].reg_cnt),
                     .DTYPE(t_node),

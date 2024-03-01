@@ -151,8 +151,8 @@ module sim_cm_sort ();
                 data_result[g] = 1'b0;
                 stim = gen_stim();
 
+                // Random stimulus
                 repeat(20) @ (posedge (clk));
-
                 vld = 1'b1;
                 for(u32 i = 0; i < DCNT; i++) begin
                     stim[i] = stim[i][DWIDTH - 1 : 0];
@@ -161,6 +161,17 @@ module sim_cm_sort ();
 
                 @ (posedge clk);
                 vld = 1'b0;
+
+                // Same for multiple
+                repeat(20) @ (posedge (clk));
+                vld = 1'b1;
+                for(u32 i = 0; i < DCNT; i++) begin
+                    stim[i] = stim[i][DWIDTH - 1 : 0];
+                    if(i % 2)
+                        data[i] = stim[i];
+                    else
+                        data[i] = '1;
+                end
             end
 
             always_ff @ (posedge clk) begin
