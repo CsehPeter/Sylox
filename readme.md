@@ -15,6 +15,6 @@ The goal of the project is to create general SystemVerilog library code that can
 
 - doc: Documentation of both source and verification code. Include all .md files and all drawings
 - guide: Templates that should help the development
-- hdl: Hardware Description Language (HDL), source code of Systemverilog (.sv) modules, interfaces, packages.
+- rtl: Source code of Systemverilog (.sv) modules, interfaces, packages
 - script: Auxiliary script code that helps the development
 - verif: Code for testing the source codes in the *hdl* folder

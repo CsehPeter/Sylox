@@ -11,6 +11,8 @@ import cm_pkg::*;
 
 module sim_cm_sort ();
 
+// TODO: Index check in code
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialize (Clock & Reset)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +82,7 @@ module sim_cm_sort ();
     endfunction
 
     // Check
-    function automatic bit check_result(t_arr du, t_arr ds, u32 data_cnt, u32 data_width);
+    function automatic bit check_data_result(t_arr du, t_arr ds, u32 data_cnt, u32 data_width);
         t_arr du_full = du;
         t_arr ds_prg;
 
@@ -102,21 +104,24 @@ module sim_cm_sort ();
 // DUTs
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    logic result [INST_CNT - 1 : 0];
+    logic data_result [INST_CNT - 1 : 0];
+    logic idx_result [INST_CNT - 1 : 0];
 
     generate
         for(genvar g = 0; g < INST_CNT; g++) begin : gen_duts
 
             // Parameters
-            localparam DCNT     = 4 + 2 * g;
-            localparam DWIDTH   = 16;
-            localparam REG_CNT      = 1 + g;
+            localparam u32 DCNT         = 4 + 2 * g;
+            localparam u32 DWIDTH       = 16;
+            localparam u32 IDX_WIDTH    = sclog2(DCNT);
+            localparam u32 REG_CNT      = 1 + g;
 
 
             // Signals
             logic i_vld;
             logic [DCNT - 1 : 0][DWIDTH - 1 : 0] i_data;
             logic o_vld;
+            logic [DCNT - 1 : 0][IDX_WIDTH - 1 : 0] o_idx;
             logic [DCNT - 1 : 0][DWIDTH - 1 : 0] o_data;
 
             // DUT
@@ -127,9 +132,12 @@ module sim_cm_sort ();
             ) sort (
                 .i_clk(clk),
                 .i_rst(rst),
+
                 .i_vld(i_vld),
                 .i_data(i_data),
+
                 .o_vld(o_vld),
+                .o_idx(o_idx),
                 .o_data(o_data)
             );
 
@@ -140,7 +148,7 @@ module sim_cm_sort ();
 
             initial begin
                 vld = 1'b0;
-                result[g] = 1'b0;
+                data_result[g] = 1'b0;
                 stim = gen_stim();
 
                 repeat(20) @ (posedge (clk));
@@ -160,10 +168,10 @@ module sim_cm_sort ();
                 i_data <= data;
             end
 
-            // Check result
+            // Check data_result
             always_ff @ (posedge clk)
                 if(o_vld)
-                    result[g] <= check_result(stim, o_data, DCNT, DWIDTH);
+                    data_result[g] <= check_data_result(stim, o_data, DCNT, DWIDTH);
 
         end
     endgenerate
