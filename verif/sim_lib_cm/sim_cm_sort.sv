@@ -53,7 +53,7 @@ module sim_cm_sort ();
         t_arr stim;
         i32 num;
 
-        for(u32 i = 0; i < DCNT_LIM; i++) begin
+        for(u8 i = 0; i < DCNT_LIM; i++) begin
             num = $random() % 2 ** DWIDTH_LIM;
             if(num < 0)
                 num = -num;
@@ -68,8 +68,8 @@ module sim_cm_sort ();
         t_arr ord = unord;
         logic [DWIDTH_LIM - 1 : 0] tmp;
 
-        for(u32 i = 0; i < DCNT_LIM - 1; i++) begin
-            for(u32 j = 0; j < DCNT_LIM - 1 - i; j++) begin
+        for(u8 i = 0; i < DCNT_LIM - 1; i++) begin
+            for(u8 j = 0; j < DCNT_LIM - 1 - i; j++) begin
                 if(ord[j] > ord[j + 1]) begin
                     tmp = ord[j];
                     ord[j] = ord[j + 1];
@@ -81,21 +81,19 @@ module sim_cm_sort ();
         return ord;
     endfunction
 
-    // Check
-    function automatic bit check_data_result(t_arr du, t_arr ds, u32 data_cnt, u32 data_width);
-        t_arr du_full = du;
-        t_arr ds_prg;
+    // Search index
+    function automatic i32 get_idx(t_arr arr, u32 val);
+        for(u8 i = 0; i < DCNT_LIM; i++)
+            if(arr[i] == val)
+                return i;
+        return -1;
+    endfunction
 
-        for(u32 i = data_cnt; i < DCNT_LIM; i++) begin
-            du_full[i] = '1;
-        end
-        ds_prg = sort(du_full);
-
-
-        for(u32 i = 0; i < data_cnt; i++) begin
-            if(ds[i] != ds_prg[i])
+    // Check data result
+    function automatic bit check_data_result(t_arr arr_a, t_arr arr_b, u32 data_cnt, u32 data_width);
+        for(u32 i = 0; i < data_cnt; i++)
+            if(arr_a[i] != arr_b[i])
                 return 1'b0;
-        end
 
         return 1'b1;
     endfunction
@@ -116,6 +114,9 @@ module sim_cm_sort ();
             localparam u32 IDX_WIDTH    = sclog2(DCNT);
             localparam u32 REG_CNT      = 1 + g;
 
+            // Simulation signals
+            t_arr du;
+            t_arr ds;
 
             // Signals
             logic i_vld;
@@ -129,7 +130,7 @@ module sim_cm_sort ();
                 .DCNT(DCNT),
                 .DWIDTH(DWIDTH),
                 .REG_CNT(REG_CNT)
-            ) sort (
+            ) inst_sort (
                 .i_clk(clk),
                 .i_rst(rst),
 
@@ -142,21 +143,18 @@ module sim_cm_sort ();
             );
 
             // Stimulus
-            t_arr stim;
             logic vld;
             logic [DCNT - 1 : 0][DWIDTH - 1 : 0] data;
 
             initial begin
                 vld = 1'b0;
                 data_result[g] = 1'b0;
-                stim = gen_stim();
 
-                // Random stimulus
+                // Assign stimulus
                 repeat(20) @ (posedge (clk));
                 vld = 1'b1;
                 for(u32 i = 0; i < DCNT; i++) begin
-                    stim[i] = stim[i][DWIDTH - 1 : 0];
-                    data[i] = stim[i];
+                    data[i] = du[i];
                 end
 
                 @ (posedge clk);
@@ -166,9 +164,8 @@ module sim_cm_sort ();
                 repeat(20) @ (posedge (clk));
                 vld = 1'b1;
                 for(u32 i = 0; i < DCNT; i++) begin
-                    stim[i] = stim[i][DWIDTH - 1 : 0];
                     if(i % 2)
-                        data[i] = stim[i];
+                        data[i] = du[i];
                     else
                         data[i] = '1;
                 end
@@ -180,12 +177,16 @@ module sim_cm_sort ();
             end
 
             // Check data_result
-            always_ff @ (posedge clk)
-                if(o_vld)
-                    data_result[g] <= check_data_result(stim, o_data, DCNT, DWIDTH);
+            always_ff @ (posedge clk) begin
+                du = gen_stim();
+                ds = sort(du);
+
+                if(o_vld) begin
+                    data_result[g] <= check_data_result(du, o_data, DCNT, DWIDTH);
+                end
+            end
 
         end
     endgenerate
-
 
 endmodule

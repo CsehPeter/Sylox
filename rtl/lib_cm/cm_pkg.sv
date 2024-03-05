@@ -21,10 +21,9 @@ package cm_pkg;
 
     // Arbiter
     typedef enum {
-        ARB_MIN,
-        ARB_MAX
-        // TODO: add more
-    } t_arb_algo;
+        SORT_MIN,
+        SORT_MAX
+    } t_sort_dir;
 
 
 endpackage

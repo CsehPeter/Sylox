@@ -183,7 +183,6 @@ module cm_sort #(
         logic [IDX_WIDTH - 1 : 0] idx;
     } t_node;
 
-    // Declaration of network logic
     t_node [PNET.stage_cnt : 0][DCNT - 1 : 0] c_net;
 
 
@@ -199,11 +198,9 @@ module cm_sort #(
     // Generate comparators
     generate
         for(genvar s = 0; s < PNET.stage_cnt; s++) begin : g_stage
-
             t_node [DCNT - 1 : 0] c_stage;      // Temporary values for the current stage
 
             for(genvar n = 0; n < DCNT; n++) begin : g_node
-
                 localparam u32 ia = n;                                  // Self index
                 localparam u32 ib = PNET.stages[s].nodes[n].idx_other;  // Other index
 

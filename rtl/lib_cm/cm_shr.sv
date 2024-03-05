@@ -32,20 +32,17 @@ module cm_shr #(
             DTYPE q_shr [LEN - 1 : 0];
 
             always_ff @ (posedge i_clk) begin : p_shr
-                for(u32 i = 0; i < LEN; i++) begin
-
-                    if(i == 0) begin
+                for(u32 i = 0; i < LEN; i++)
+                    if(i == 0)
                         if(i_rst == 1'b1)
                             q_shr[i] <= '0;
                         else
                             q_shr[i] <= i_data;
-                    end else begin
+                    else
                         if(i_rst == 1'b1 && RST_MODE == SHR_RST_ALL)
                             q_shr[i] <= '0;
                         else
                             q_shr[i] <= q_shr[i - 1];
-                    end
-                end
             end
 
             assign o_data = q_shr[LEN - 1];
