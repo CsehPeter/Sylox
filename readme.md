@@ -1,5 +1,5 @@
 # Project
-The goal of the project is to create general SystemVerilog library code that can be used in different HDL designs.
+The goal of the project is to create general SystemVerilog library code that can be used in different RTL designs.
 
 - Currently the target is to make a stream type interconnect module (e.g. AXIS interconnect)
 - The project does not contain proper verification (UVM or formal), only simple simulation, so be aware of bugs

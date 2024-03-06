@@ -2,29 +2,29 @@ Editing and formatting in [Obsidian](https://help.obsidian.md/Editing+and+format
 
 # Table
 
-| Formatting | Syntax | Effect | Supported |
-| ----------- | ----------- | ----------- | - |
-| Headings | `# H1` <br /> `## H2` | Y |
-| Bold | ``**bold**`` | **bold** | Y |
-| Italic | `*italic*` | *italic* | Y |
-| Blockquote | `> blockquote` | > blockquote | Y |
-| Ordered List | `1. 1st` <br/> `2. 2nd` | Y |
-| Unordered List | `- 1st` <br/> `- 2nd` | Y |
-| Code | \`code\` | `code` | Y |
-| ˙Horizontal Rule | `---` | --- | Y |
-| Link | `[Markdown Guide](https://www.markdownguide.org)` | [Markdown Guide](https://www.markdownguide.org) | Y |
-| Image | `![alt text](https://www.markdownguide.org/assets/images/tux.png)` | ![alt text](https://www.markdownguide.org/assets/images/tux.png) | Y |
-| Table |  |  | Y |
-| Fenced Code Block | \``` block \``` |  | Y |
-| Footnote | `Sentence. [^1]` <br/> `[^]: Footnote` |  | Y |
-| Heading ID | `# H1 {#custom-id}` |  | N |
-| Definition List | `term` <br/> `: definition` |  | N |
-| Strikethrough | `~~text~~` | ~~text~~ | Y |
-| Task List | `- [x] i0` <br/> `- [] i2` |  | Y |
-| Emoji | `:joy:` | :joy: | N |
-| Highlight | `==Text==` | ==Text== | Y |
-| Subscript | `H~2~O` | H~2~O | N |
-| Superscript | `X^2^` | X^2^ | N |
+| Formatting        | Syntax                                                             | Effect                                                           | Supported |
+| ----------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------- | --------- |
+| Headings          | `# H1` <br /> `## H2`                                              | Y                                                                |           |
+| Bold              | ``**bold**``                                                       | **bold**                                                         | Y         |
+| Italic            | `*italic*`                                                         | *italic*                                                         | Y         |
+| Blockquote        | `> blockquote`                                                     | > blockquote                                                     | Y         |
+| Ordered List      | `1. 1st` <br/> `2. 2nd`                                            | Y                                                                |           |
+| Unordered List    | `- 1st` <br/> `- 2nd`                                              | Y                                                                |           |
+| Code              | \`code\`                                                           | `code`                                                           | Y         |
+| ˙Horizontal Rule  | `---`                                                              | ---                                                              | Y         |
+| Link              | `[Markdown Guide](https://www.markdownguide.org)`                  | [Markdown Guide](https://www.markdownguide.org)                  | Y         |
+| Image             | `![alt text](https://www.markdownguide.org/assets/images/tux.png)` | ![alt text](https://www.markdownguide.org/assets/images/tux.png) | Y         |
+| Table             |                                                                    |                                                                  | Y         |
+| Fenced Code Block | \``` block \```                                                    |                                                                  | Y         |
+| Footnote          | `Sentence. [^1]` <br/> `[^]: Footnote`                             |                                                                  | Y         |
+| Heading ID        | `# H1 {#custom-id}`                                                |                                                                  | N         |
+| Definition List   | `term` <br/> `: definition`                                        |                                                                  | N         |
+| Strikethrough     | `~~text~~`                                                         | ~~text~~                                                         | Y         |
+| Task List         | `- [x] i0` <br/> `- [] i2`                                         |                                                                  | Y         |
+| Emoji             | `:joy:`                                                            | :joy:                                                            | N         |
+| Highlight         | `==Text==`                                                         | ==Text==                                                         | Y         |
+| Subscript         | `H~2~O`                                                            | H~2~O                                                            | N         |
+| Superscript       | `X^2^`                                                             | X^2^                                                             | N         |
 
 # Effects
 

@@ -13,10 +13,10 @@ import sys_pkg_type::*;
 import cm_pkg::*;
 
 module cm_arbiter #(
-    parameter u32           DCNT        = 4,        // Data count
-    parameter u32           DWIDTH      = 8,        // Data width
-    parameter u32           REG_CNT     = 2,        // Register count, equal to total latency
-    parameter t_sort_dir    DIR         = SORT_MAX, // Direction of the sort
+    parameter u32           DCNT    = 4,            // Data count
+    parameter u32           DWIDTH  = 8,            // Data width
+    parameter u32           REG_CNT = 2,            // Register count, equal to total latency
+    parameter t_sort_dir    DIR     = SORT_MAX,     // Direction of the sort
 
     localparam u32          IDX_WIDTH = sclog2(DCNT)
 )(

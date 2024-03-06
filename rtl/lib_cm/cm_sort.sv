@@ -1,16 +1,17 @@
-// The use of this code requires a license fise. If you lack the license fise, you are prohibited to use it!
+// The use of this code requires a license file. If you lack the license file, you are prohibited to use it!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Author       : Peter Cseh
 // Library      : lib_cm
 // Description  : Provides a pipelined, parallel sorting logic. Uses Batcher odd-even sorting.
 //                Lowest data goes to the lowest index
-//                - Steps of generating the network:
-//                      1. Generate sorting network that is the power of 2
-//                      2. Exclude nodes that are outside of the data count requirement
-//                      3. Merge stages if possible
-//                      4. Determine the stage count of the reduced network
-//                      5. Assign registers for the appropriate stages
+//
+//                Steps of generating the network:
+//                  1. Generate sorting network that is the power of 2
+//                  2. Exclude nodes that are outside of the data count range
+//                  3. Merge stages if possible. I.e. bring forward comparators to earlier stages
+//                  4. Determine the stage count of the reduced network
+//                  5. Assign registers for the appropriate stages
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 `ifndef __CM_SORT

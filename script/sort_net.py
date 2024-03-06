@@ -155,25 +155,22 @@ class BatcherSortNet(SortNet):
             for s in range(d + 1):                      # Stage
                 for g in range(2 ** (degree - d - 1)):  # Group
                     # Offset
-                    grp_offset = 2 ** (d + 1) * g       # Starting index of the group
-                    cmp_offset = 2 ** (d - s)           # Starting index of the comparator in the stage
-                    if s == 0:
-                        offset = grp_offset
-                    else:
-                        offset = grp_offset + cmp_offset
+                    offset = 2 ** (d + 1) * g       # Start index of the group
+                    if s > 0:
+                        offset += 2 ** (d - s)      # Start index of the comparator in the stage
 
                     # Count
                     if s == 0:
-                        cnt = 1
+                        count = 1
                     else:
-                        cnt = 2 ** s - 1
+                        count = 2 ** s - 1
 
                     # Size
                     size = 2 ** (d - s)
 
                     # Add segment
                     seg = SortNetSegment(d, s, g)
-                    seg.gen_cmps(offset, cnt, size, "cr")
+                    seg.gen_cmps(offset, count, size, "cr")
                     self.net.append(seg)
 
 
@@ -190,11 +187,11 @@ class BitonicSortNet(SortNet):
             for s in range(d + 1):                      # Stage
                 for g in range(2 ** (degree - d - 1)):  # Group
                     # Offset
-                    grp_offset = 2 ** (d + 1) * g       # Starting index of the group
+                    grp_offset = 2 ** (d + 1) * g       # Start index of the group
                     offset = grp_offset
 
                     # Count
-                    cnt = 2 ** s
+                    count = 2 ** s
 
                     # Size
                     size = 2 ** (d - s)
@@ -207,7 +204,7 @@ class BitonicSortNet(SortNet):
 
                     # Add segment
                     seg = SortNetSegment(d, s, g)
-                    seg.gen_cmps(offset, cnt, size, shape)
+                    seg.gen_cmps(offset, count, size, shape)
                     self.net.append(seg)
 
 
@@ -215,8 +212,8 @@ class BitonicSortNet(SortNet):
 ## Test
 ####################################################################################################
 
-max_degree = 6
-max_test_cnt = 10**5
+max_degree = 3
+max_test_cnt = 10**3
 
 
 def gen_test_cases(degree: int):

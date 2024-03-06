@@ -3,8 +3,8 @@
 | --------------- | ---------- | :---: | ------- | ------------ | ------------- | ------- |
 | Shift Register  | cm_shr     | ==1== | DONE    | DONE*        | DONE          |         |
 | FIFO            | ds_fifo    | ==1== | DONE    | DONE*        | DONE          |         |
-| Sorting Network | cm_sort    | ==0== | DONE    | DONE         | TODO          |         |
-| Arbiter         | cm_arbiter | ==0== | ONGOING | TODO         | TODO          |         |
+| Sorting Network | cm_sort    | ==0== | DONE    | DONE         | ONGOING       |         |
+| Arbiter         | cm_arbiter | ==0== | ONGOING | ONGOING      | TODO          |         |
 | Interconnect    | ds_icon    | ==0== | ONGOING | TODO         | TODO          |         |
 \*Only the waveform is inspected, no proper test is done. Expect bugs.
 # Guide
